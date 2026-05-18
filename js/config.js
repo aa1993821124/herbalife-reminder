@@ -5,8 +5,8 @@
 
 const CONFIG = {
   // ── 把你的 Apps Script Web App URL 貼在這裡 ──
-  // 部署方式：Apps Script → 部署 → 新增部署 → 網路應用程式 → 複製 URL
-  API_URL: '',
+  // 部署方式：Apps Script → 部署 → 新增部署 → 網路應用程式 → 複製 
+  API_URL:'https://script.google.com/macros/s/AKfycbzozmsyEGNm2BnqA5CoTaIpwJeOzScBPF0jSN8sJ-Xf4orIFjii4lRK-Np1pOOIM-qh/exec',
 
   // ── 賀寶芙產品清單（可自行增減）──
   PRODUCTS: [
