@@ -65,11 +65,13 @@ const App = {
     const upcoming = all.filter(r => !r.done && new Date(r.datetime) >= new Date()).sort((a,b) => new Date(a.datetime) - new Date(b.datetime));
     const overdue = all.filter(r => !r.done && new Date(r.datetime) < new Date());
 
-    const filtered = clients.filter(c =>
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      (c.phone && c.phone.includes(search)) ||
-      (c.email && c.email.toLowerCase().includes(search.toLowerCase()))
-    );
+    const filtered = clients.filter(c => {
+      if (!c || !c.name) return false;
+      const s = search.toLowerCase();
+      return c.name.toLowerCase().includes(s) ||
+        (c.phone && c.phone.includes(search)) ||
+        (c.email && c.email.toLowerCase().includes(s));
+    });
 
     let html = '';
 
