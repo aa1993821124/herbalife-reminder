@@ -315,6 +315,12 @@ function doGet(e) {
       case "getAdmins":
         result = getSheetData(getSheet("管理員"));
         break;
+      case "getAll": {
+        const clientsAll = getSheetData(getSheet("客戶資料"));
+        const adminsAll = getSheetData(getSheet("管理員"));
+        result = { clients: clientsAll, admins: adminsAll };
+        break;
+      }
       case "getRules":
         result = getSheetData(getSheet("跟進規則模板"));
         break;
@@ -372,6 +378,33 @@ function doPost(e) {
         }
         result = { success: true };
         break;
+
+      case "addAdmin": {
+        const adminSh = getSheet("管理員");
+        adminSh.appendRow([
+          body.id, body.name, body.role, body.store,
+          body.lineUserId, body.email, body.enabled, body.notes || ""
+        ]);
+        result = { success: true };
+        break;
+      }
+
+      case "updateAdmin": {
+        const adminSh2 = getSheet("管理員");
+        const adminRows = adminSh2.getDataRange().getValues();
+        for (let i = 1; i < adminRows.length; i++) {
+          if (String(adminRows[i][0]) === String(body.adminId)) {
+            const d = body.data || {};
+            adminSh2.getRange(i + 1, 1, 1, 8).setValues([[
+              d.id || body.adminId, d.name, d.role, d.store,
+              d.lineUserId, d.email, d.enabled, d.notes || ""
+            ]]);
+            break;
+          }
+        }
+        result = { success: true };
+        break;
+      }
 
       default:
         result = { error: "Unknown action" };

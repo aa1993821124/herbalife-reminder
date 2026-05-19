@@ -20,10 +20,9 @@ const App = {
   async init() {
     this.el = document.getElementById('app');
     this.render();
-    const clients = await API.get('getClients');
-    const admins = await API.get('getAdmins');
-    this.state.clients = Array.isArray(clients) ? clients : [];
-    this.state.admins = Array.isArray(admins) ? admins : [];
+    const all = await API.get('getAll');
+    this.state.clients = Array.isArray(all.clients) ? all.clients : [];
+    this.state.admins = Array.isArray(all.admins) ? all.admins : [];
     this.state.loading = false;
     this.render();
   },
@@ -185,8 +184,6 @@ const App = {
     html += this._field('Email', 'cf_email', c.email || '', 'email@example.com', 'email');
     html += this._field('LINE ID / 名稱', 'cf_lineId', c.lineId || '', 'LINE ID');
     html += this._field('購買日期', 'cf_purchaseDate', c.purchaseDate || formatDateOnly(new Date()), '', 'date');
-    html += this._field('店別', 'cf_store', c.store || '', '例：新莊店');
-    html += this._field('客戶來源', 'cf_source', c.source || '', '例：朋友介紹、門市體驗');
 
     // Admin dropdown
     html += '<div class="field-wrap"><label class="field-label">負責管理員</label>';
@@ -225,7 +222,9 @@ const App = {
     if (!name) { showToast('請輸入客戶姓名'); return; }
 
     const adminId = document.getElementById('cf_adminId').value;
-    const adminName = this.getAdminName(adminId);
+    const adminObj = this.state.admins.find(a => (a['管理員ID'] || a.id) === adminId);
+    const adminName = adminObj ? (adminObj['姓名'] || adminObj.name || '') : '';
+    const store = adminObj ? (adminObj['負責店別'] || adminObj.store || '') : '';
     const products = Array.from(document.querySelectorAll('.product-tag.active')).map(b => b.textContent.replace('✓ ', '')).join(', ');
     const data = {
       name: name,
@@ -233,8 +232,7 @@ const App = {
       email: document.getElementById('cf_email').value.trim(),
       lineId: document.getElementById('cf_lineId').value.trim(),
       purchaseDate: document.getElementById('cf_purchaseDate').value,
-      store: document.getElementById('cf_store').value.trim(),
-      source: document.getElementById('cf_source').value.trim(),
+      store: store,
       adminId: adminId,
       adminName: adminName,
       products: products,
